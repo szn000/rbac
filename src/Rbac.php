@@ -1,12 +1,12 @@
 <?php
-namespace szn\rbac;
+namespace sunzhaonan\rbac;
 
 
-use szn\nestedsets\NestedSets;
-use szn\rbac\model\Permission;
-use szn\rbac\model\PermissionCategory;
-use szn\rbac\model\Role;
-use szn\rbac\model\UserRole;
+use sunzhaonan\nestedsets\NestedSets;
+use sunzhaonan\rbac\model\Permission;
+use sunzhaonan\rbac\model\PermissionCategory;
+use sunzhaonan\rbac\model\Role;
+use sunzhaonan\rbac\model\UserRole;
 use think\Db;
 use think\db\Query;
 use think\db\Where;
