@@ -1,0 +1,19 @@
+{
+    "name": "szn/rbac",
+    "description": "Resource-Based Access Control",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "szn000",
+            "email": "343639885@qq.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "szn\\rbac\\": "src/"
+        }
+    }
+}
