@@ -8,7 +8,7 @@ use think\Exception;
 
 class Resources
 {
-    public function saveResources($data = [])
+    public function saveResources($permissionIds = '', $data = [])
     {
         if (!empty($data)) {
             $this->data($data);
@@ -29,7 +29,7 @@ class Resources
     {
         $model = Db::name('resources')->setConnection($this->getConnection());
         if (is_numeric($condition)) {
-           return $model->where('id', $condition)->find();
+            return $model->where('id', $condition)->find();
         } else {
             return $model->where($condition)->select();
         }
