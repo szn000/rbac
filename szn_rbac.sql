@@ -61,6 +61,7 @@ CREATE TABLE `role` (
         `id` int(11) NOT NULL,
         `name` varchar(50) NOT NULL,
         `status` int(11) NOT NULL DEFAULT '1' COMMENT '是否启用',
+        `level` int(11) NOT NULL DEFAULT '1' COMMENT '',
         `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
         `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
