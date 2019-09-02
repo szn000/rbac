@@ -112,7 +112,7 @@ class Rbac
         return $model->getPermission($condition, $withPermissionId);
     }
 
-    public function delRole($id)
+    public function delPermission($id)
     {
         $model = new Permission($this->db);
         try {
