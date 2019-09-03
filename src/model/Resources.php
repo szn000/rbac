@@ -64,10 +64,4 @@ class Resources
         $this->commit();
         return true;
     }
-
-    public function getResourcesByManagerId($manager_id)
-    {
-
-    }
-
 }
