@@ -21,7 +21,7 @@ class Role extends Base
         if (!empty($data)) {
             $this->data($data);
         }
-        $validate = new \gmars\rbac\validate\Role();
+        $validate = new \sunzhaonan\rbac\validate\Role();
         if (!$validate->check($this)) {
             throw new Exception($validate->getError());
         }

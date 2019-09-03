@@ -192,14 +192,90 @@ class Rbac
         return true;
     }
 
-    public function cacheManagerResources()
+    public function verifyRequest($controller,$action,$method)
     {
-
+        $result = true;
+        $resourcesId = $this->verifyResources($controller,$action,$method);
+        if ($resourcesId) {
+            $permissionId = $this->verifyPermission($resourcesId);
+            if ($permissionId) {
+                $roleId = $this->verifyRole($permissionId);
+                if ($roleId) {
+                    $result = $this->verifyManager($roleId);
+                } 
+            }
+        }
+        return $result;
+    }
+    
+    private function verifyManager($roleId)
+    {
+        $result = false;
+        if (Cache::has('rbac_manger')) {
+            $manager = Cache::get('rbac_manager');
+            $manager = unserialize($manager);
+            foreach ($manager as $key => $value) {
+                if ($value == $managerId) {
+                    $result = $key;
+                    break;
+                }
+            }
+        }
+        return $result;
+    }
+    
+    private function verifyRole($permissionId) 
+    {
+        $result = false;
+        if (Cache::has('rbac_role')) {
+            $role = Cache::get('rbac_role');
+            $role = unserialize($role);
+            foreach ($role as $key => $value) {
+                if (in_array($permissionId,$value)) {
+                    $result = $key;
+                    break;
+                }
+            }
+        }
+        return $result;
     }
 
-    public function can()
+    private function verifyPermission($resourcesId) 
     {
+        $result = false;
+        if (Cache::has('rbac_permission')) {
+            $permission = Cache::get('rbac_permission');
+            $permission = unserialize($permission);
+            foreach ($permission as $key => $value) {
+                if (in_array($resourcesId,$value)) {
+                    $result = $key;
+                    break;
+                } 
+            }
+        }
+        return $result;
+    }
 
+
+    private function verifyResources($controller,$action,$method)
+    {
+        if (Cache::has('rbac_resources')) {
+            $resources = Cache::get('rbac_resources');
+            $resources = unserialize($resources);
+            if (!isset($resources[$controller][$action])) {
+                $result = false;
+            } else {
+                $nowResources = $resources[$controller][$action];
+                if ($method == $nowResources['method']) {
+                    $resulr = $nowResources['id'];
+                } else {
+                    $result = false;
+                }
+            }
+        } else {
+            $result = false;
+        }
+        return $result;
     }
 
     /**
@@ -252,7 +328,6 @@ class Rbac
             foreach($managerRoleResult as $managerRoleRow) {
                 $managerRoleArr[$managerRoleRow['manager_id']] = $managerRoleRow['role_id'];
             }
-            
         }
         $managerRoleArr = serialize($managerRoleArr);
         Cache::set('rbac_manager',$managerRoleArr);
@@ -262,11 +337,14 @@ class Rbac
     private function cacheRole()
     {
         $rolePermission = new RolePermission();
-        $rolePermissionResult = $rolePermission->getManagerRole(self::DEFAULT_CONDITION);
+        $rolePermissionResult = $rolePermission->getRolePermission(self::DEFAULT_CONDITION);
         $rolePermissionArr = [];
         if (!empty($rolePermissionResult)) {
             foreach($rolePermissionResult as $rolePermissionRow) {
-                $rolePermissionArr[$rolePermissionRow['role_id']] = $rolePermissionRow['permission_id'];
+                if (empty($rolePermissionArr[$rolePermissionRow['role_id']])) {
+                    $rolePermissionArr[$rolePermissionRow['role_id']] = [];
+                }
+                $rolePermissionArr[$rolePermissionRow['role_id']][] = $rolePermissionRow['permission_id'];
             }
             
         }
@@ -278,16 +356,19 @@ class Rbac
     private function cachePermission()
     {
         $permissionResources = new PermissionResources();
-        $permissionResourcesResult = $permissionResources->getManagerRole(self::DEFAULT_CONDITION);
+        $permissionResourcesResult = $permissionResources->getPermissionResources(self::DEFAULT_CONDITION);
         $permissionResourcesArr = [];
         if (!empty($permissionResourcesResult)) {
             foreach($permissionResourcesResult as $permissionResourcesRow) {
-                $permissionResourcesArr[$permissionResourcesRow['permission_id']] = $permissionResourcesRow['resources_id'];
+                if (empty($permissionResourcesArr[$permissionResourcesRow['permission_id']])) {
+                    $permissionResourcesArr[$permissionResourcesRow['permission_id']] = [];
+                }
+                $permissionResourcesArr[$permissionResourcesRow['permission_id']][] = $permissionResourcesRow['resources_id'];
             }
             
         }
         $permissionResourcesArr = serialize($permissionResourcesArr);
-        Cache::set('rbac_role',$permissionResourcesArr);
+        Cache::set('rbac_permission',$permissionResourcesArr);
     }
 
     private function cacheResources()
@@ -297,7 +378,10 @@ class Rbac
         $resourcesArr = [];
         if (!empty($resourcesResult)) {
             foreach ($resourcesResult as $resourcesRow) {
-                $resourcesArr[$resourcesRow['id']] = $resourcesRow;
+                if (empty($resourcesArr[$resourcesRow['module']])) {
+                    $resourcesArr[$resourcesRow['module']] = [];
+                }
+                $resourcesArr[$resourcesRow['module']][$resourcesRow['operate']] = $resourcesRow;
             }
         }
         $resourcesArr = serialize($resourcesArr);

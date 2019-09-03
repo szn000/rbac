@@ -19,7 +19,7 @@ class Permission extends Base
         if (!empty($data)) {
             $this->data($data);
         }
-        $validate = new \gmars\rbac\validate\PermissionCategory();
+        $validate = new \sunzhaonan\rbac\validate\Permission();
         if (!$validate->check($this)) {
             throw new Exception($validate->getError());
         }
@@ -36,7 +36,7 @@ class Permission extends Base
             throw new Exception('空的资源出错');
             return $this;
         }
-        $resourcesIdsArr = array_filter(explode(',', $permissionIds));
+        $resourcesIdsArr = array_filter(explode(',', $resourcesIds));
         if (empty($resourcesIdsArr)) {
             $this->rollback();
             throw new Exception('空的资源出错');
@@ -49,11 +49,11 @@ class Permission extends Base
             throw new Exception('删除原有资源时出错');
         }
         $writeData = [];
-        foreach ($permissionIdsArr as $v)
+        foreach ($resourcesIdsArr as $v)
         {
             $writeData[] = [
-                'resources_id' => $this->id,
-                'permission_id' => $v
+                'resources_id' => $v,
+                'permission_id' => $this->id
             ];
         }
         if ($permissionResources->saveAll($writeData) === false) {

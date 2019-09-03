@@ -6,7 +6,7 @@ namespace sunzhaonan\rbac\model;
 use think\Db;
 use think\Exception;
 
-class Resources
+class Resources extends Base
 {
     public function saveResources($permissionIds = '', $data = [])
     {
