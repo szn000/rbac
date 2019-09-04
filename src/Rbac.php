@@ -266,8 +266,8 @@ class Rbac
                 $result = false;
             } else {
                 $nowResources = $resources[$controller][$action];
-                if ($method == $nowResources['method']) {
-                    $resulr = $nowResources['id'];
+                if ($method == $nowResources) {
+                    $result = $nowResources['id'];
                 } else {
                     $result = false;
                 }

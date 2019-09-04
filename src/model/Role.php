@@ -118,8 +118,20 @@ class Role extends Base
             if (is_numeric($condition) && $condition > 0) {
                 $role = $model->where('id', $condition)->find();
                 if (!empty($role) && $withPermissionId) {
-                    $role['permission_ids'] = Db::name('role_permission')->setConnection($this->getConnection())
-                        ->where('role_id', $condition)->column('permission_id');
+                    $rolePermission = Db::name('role_permission')->setConnection($this->getConnection())
+                        ->leftJoin('permission','role_permission.permission_id=permission.id')
+                        ->where('role_id', $condition)->select();
+                    $roleIdIndexer = [];
+                    $roleNameIndexer = [];
+                    if (!empty($rolePermission)) {
+                        foreach ($rolePermission as $v)
+                        {
+                            $roleIdIndexer[] = $v['permission_id'];
+                            $roleNameIndexer[] = $v['name'];
+                        }
+                    }
+                    $role['permissionIds'] = $roleIdIndexer;
+                    $role['permissionNames'] = $roleNameIndexer;
                 }
                 return $role;
             }
@@ -128,17 +140,22 @@ class Role extends Base
             ->where($where)->select();
         if (!empty($role) && $withPermissionId) {
             $permission = Db::name('role_permission')->setConnection($this->getConnection())
-                ->where('role_id', 'IN', array_column($role, 'id'))->select();
+                ->leftJoin('permission','role_permission.permission_id=permission.id')
+                ->where('role_id', 'IN', array_column($role, 'id'))
+                ->select();
             $roleIdIndexer = [];
+            $roleNameIndexer = [];
             if (!empty($permission)) {
                 foreach ($permission as $v)
                 {
                     $roleIdIndexer[$v['role_id']][] = $v['permission_id'];
+                    $roleNameIndexer[$v['role_id']][] = $v['name'];
                 }
             }
             foreach ($role as &$v)
             {
-                $v['permission_ids'] = isset($roleIdIndexer[$v['id']])? $roleIdIndexer[$v['id']] : [];
+                $v['permissionIds'] = isset($roleIdIndexer[$v['id']])? $roleIdIndexer[$v['id']] : [];
+                $v['permissionNames'] = isset($roleNameIndexer[$v['id']])? $roleNameIndexer[$v['id']] : [];
                 unset($v);
             }
         }
