@@ -58,8 +58,7 @@ class Rbac
         $model = new Resources($this->db);
         $model->data($data);
         try{
-            $res = $model->saveResources();
-            return $res;
+            return $model->saveResources();
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
@@ -101,8 +100,7 @@ class Rbac
         $model = new Permission($this->db);
         $model->data($data);
         try{
-            $res = $model->savePermission($resourcesIds);
-            return $res;
+            return $model->savePermission($resourcesIds);
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
@@ -119,8 +117,7 @@ class Rbac
     {
         $model = new Permission($this->db);
         try {
-            $res = $model->delPermission($id);
-            return $res;
+            return $model->delPermission($id);
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
@@ -131,8 +128,7 @@ class Rbac
         $model = new Role($this->db);
         $model->data($data);
         try{
-            $res = $model->saveRole($permissionIds);
-            return $res;
+            return $model->saveRole($permissionIds);
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
@@ -149,8 +145,7 @@ class Rbac
     {
         $model = new Role($this->db);
         try {
-            $res = $model->delRole($id);
-            return $res;
+            return $model->delRole($id);
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
@@ -177,7 +172,7 @@ class Rbac
             throw new Exception('给用户分配角色出错');
         }
         $model->commit();
-        return ;
+        return true;
     }
 
     public function delManagerRole($id)
